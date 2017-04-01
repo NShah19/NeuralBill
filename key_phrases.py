@@ -4,6 +4,7 @@ import sys
 import base64
 import json
 from api_keys import account_key
+from parse_bill import get_bill_text
 
 # Azure portal URL.
 base_url = 'https://westus.api.cognitive.microsoft.com/'
@@ -12,8 +13,11 @@ base_url = 'https://westus.api.cognitive.microsoft.com/'
 
 headers = {'Content-Type':'application/json', 'Ocp-Apim-Subscription-Key':account_key}
 
-input_texts = '{"documents":[{"id":"1","text":"hello world"},{"id":"2","text":"hello foo world"},{"id":"three","text":"hello my world"},]}'
 
+# input_texts = '{"documents":[{"id":"1","text":"hello world"},{"id":"2","text":"hello foo world"},{"id":"three","text":"hello my world"},]}'
+
+url = 'https://www.congress.gov/bill/114th-congress/house-bill/1321/text'
+input_texts = '{"documents":[{"id":"1","text":"%s"},]}' % (get_bill_text(url))
 
 # Detect key phrases.
 batch_keyphrase_url = base_url + 'text/analytics/v2.0/keyPhrases'
