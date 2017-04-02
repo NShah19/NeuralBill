@@ -22,7 +22,7 @@ print("\033[1;32;40m Word Features obtained! \033[0m")
 
 # Create the training set
 print("\033[1;33;40m Creating training set... \033[0m")
-training_set = set_training_set(word_features, training_tweets)
+training_set = nltk.classify.apply_features(extract_features, training_tweets)
 print("\033[1;32;40m Training set created! \033[0m")
 
 # Create classifier and train!

@@ -140,8 +140,6 @@ for filename in subDirFiles:
 
     # Add weighted sentiment score for each stream to the list of tensor inputs
     #tensorInputs.append(weightedScore(sentiment_scores))
-"""
-"""
 #    getJSON from Twitter
 #    parse JSON into list of up to 3200 Tweet objects
 #    filter by keyword and date
