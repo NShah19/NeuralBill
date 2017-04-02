@@ -9,9 +9,9 @@ testList = list(range(0, 136))
 testOut = [1]
 testList2 = list(range(136, 0, -1))
 testOut2 = [0]
-for i in range(5):
+for i in range(7):
     arr.append([testList, testOut])
-for i in range(5):
+for i in range(3):
     arr.append([testList2, testOut2])
 
 def wrapper(arr):
@@ -75,7 +75,7 @@ def wrapper(arr):
         prediction = neural_network_model(x)
 
         # formula for cost (error)
-        cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_logits( logits = prediction, labels = y) )
+        cost = tf.reduce_mean( tf.nn.sigmoid_cross_entropy_with_logits( logits = prediction, labels = y) )
         # optimize for cost using GradientDescent
         optimizer = tf.train.GradientDescentOptimizer(1).minimize(cost)
 
