@@ -1,4 +1,5 @@
 from datetime import datetime
+from analyzer import analyze
 import pickle
 import re
 import tweepy
@@ -61,13 +62,15 @@ def isRelevant(tweet):
     return False
 
 def weightedScore(sentiment_scores):
-    score = 0;
+    numerator = 0
+    denominator = 0
     for sentiment, date in sentiment_scores:
-        maxDaysAway = (VOTE_DATE - INTRODUCTION_DATE). days + 1
+        maxDaysAway = (VOTE_DATE - INTRODUCTION_DATE).days + 1
         numDaysAway = (VOTE_DATE - date).days
-        value = math.expm1(3*(numDaysAway/maxDaysAway)) / math.expm1(3)
-        score += sentiment * (1 - value)
-    return score / len(sentiment_scores)
+        power = maxDaysAway - numDaysAway
+        numerator += (sentiment * math.pow(1.2, power))
+        denominator += math.pow(1.2, power)
+    return numerator / denominator
 
 for filename in subDirFiles:
     parsedCSV = []
@@ -97,7 +100,7 @@ for filename in subDirFiles:
     handleFile = open(HANDLE_CSV)
     listOfHandles = []
     for line in handleFile:
-        listOfHandles.append(line[0:len(line) - 1])
+        listOfHandles.append(line[0:len(line) - 2])
 
     for handle in listOfHandles:
         tweet_contents = []
@@ -118,7 +121,7 @@ for filename in subDirFiles:
                     # keep track of what tweet we are on by id
                     last_tweet_id = tweet.id
                     # perform sentiment analysis on the tweet
-                    score = analyze(tweet.text, classifer)
+                    score = analyze(tweet.text, classifier)
                     sentiment_scores.append((score, tweet.created_at))
                 # set the next tweets to parse through by making the
                 user_tweets = api.user_timeline(screen_name=handle, max_id=last_tweet_id-1, count=200, include_rts=False, trim_user=True, exlude_replies=True)
@@ -137,16 +140,6 @@ for filename in subDirFiles:
 
     # Add weighted sentiment score for each stream to the list of tensor inputs
     #tensorInputs.append(weightedScore(sentiment_scores))
-"""    numerator = 0
-    denominator = 0
-    for sentiment, date in sentiment_scores:
-        maxDaysAway = (VOTE_DATE - INTRODUCTION_DATE).days + 1
-        numDaysAway = (VOTE_DATE - date).days
-        power = maxDaysAway - numDaysAway
-        numerator += (sentiment * math.pow(1.2, power))
-        denominator += math.pow(1.2, power)
-    return numerator / denominator
-"""
 #    getJSON from Twitter
 #    parse JSON into list of up to 3200 Tweet objects
 #    filter by keyword and date
