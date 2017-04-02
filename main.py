@@ -23,7 +23,6 @@ subDirFiles = ["01.csv", "02.csv", "03.csv", "04.csv", "05.csv", "06.csv", "07.c
 
 
 #comment out everything up to classifier training below and indent everyting
-"""
 
 # Get Training Tweets
 print("\033[1;33;40m Obtaining training data... \033[0m")
@@ -52,7 +51,7 @@ classifier = nltk.NaiveBayesClassifier.train(training_set)
 print("\033[1;32;40m Classifier created! \033[0m")
 
 # classifier = get_classifier(training_tweets)
-"""
+
 tensorInputs2014 = []
 tensorInputs2016 = []
 
