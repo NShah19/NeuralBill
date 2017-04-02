@@ -3,46 +3,55 @@ import urllib.request, urllib.error, urllib.parse
 import sys
 import base64
 import json
+from time import sleep
+from random import shuffle
 from api_keys import account_key
 from parse_bill import get_bill_text
+import operator
 
 # Azure portal URL.
 base_url = 'https://westus.api.cognitive.microsoft.com/'
 # Your account key goes here.
 # account_key = '<your account key>'
-
 headers = {'Content-Type':'application/json', 'Ocp-Apim-Subscription-Key':account_key}
 
 
-# input_texts = '{"documents":[{"id":"1","text":"hello world"},{"id":"2","text":"hello foo world"},{"id":"three","text":"hello my world"},]}'
+url = 'https://www.congress.gov/bill/114th-congress/house-bill/2029/text'
+# url = 'https://www.congress.gov/bill/114th-congress/house-bill/1321/text'
 
-url = 'https://www.congress.gov/bill/114th-congress/house-bill/1321/text'
-input_texts = '{"documents":[{"id":"1","text":"%s"},]}' % (get_bill_text(url))
+full_text = get_bill_text(url)
+list_full_text = full_text.split()
+result_list = [] # result list to store each 50000 new string
+maxwords = 500
+for i in range(0, (len(list_full_text)//maxwords) + 1):
+    result_list.append(' '.join(list_full_text[i*maxwords:min((i+1) * maxwords, len(list_full_text))]))
+
+shuffle(result_list)
+input_texts = []
+for i in range(0, len(result_list)):
+    input_texts.append('{"documents":[{"id":"%s","text":"%s"},]}' % (str(i+1), result_list[i]))
+print(len(input_texts))
 
 # Detect key phrases.
 batch_keyphrase_url = base_url + 'text/analytics/v2.0/keyPhrases'
-req = urllib.request.Request(batch_keyphrase_url, input_texts.encode('utf-8'), headers)
-response = urllib.request.urlopen(req)
-result = response.read().decode('utf-8')
-obj = json.loads(result)
-for keyphrase_analysis in obj['documents']:
-    print(('Key phrases ' + str(keyphrase_analysis['id']) + ': ' + ', '.join(map(str,keyphrase_analysis['keyPhrases']))))
+keyword_dict = {}
+for i in range(0, 95):
+    print(i)
+    req = urllib.request.Request(batch_keyphrase_url, input_texts[i].encode('utf-8'), headers)
+    response = urllib.request.urlopen(req)
+    result = response.read().decode('utf-8')
+    obj = json.loads(result)
+    keyphrase_analysis = obj['documents'][0]['keyPhrases']
+    for j in range(len(keyphrase_analysis)):
+        target = keyword_dict.get(keyphrase_analysis[j])
+        if not target:
+            keyword_dict[keyphrase_analysis[j]] = 1
+        else:
+            keyword_dict[keyphrase_analysis[j]] += 1
+#         print(('Key phrases ' + str(keyphrase_analysis['id']) + ': ' + ', '.join(map(str,keyphrase_analysis['keyPhrases']))))
+sortedKeywords = sorted(keyword_dict.items(), key = operator.itemgetter(1))
+finalKeywordList = [sortedKeywords[(-1 * i) - 1][0] for i in range(min(500, len(sortedKeywords)))]
 
-# Detect language.
-# num_detect_langs = 1;
-# language_detection_url = base_url + 'text/analytics/v2.0/languages' + ('?numberOfLanguagesToDetect=' + num_detect_langs if num_detect_langs > 1 else '')
-# req = urllib.request.Request(language_detection_url, input_texts, headers)
-# response = urllib.request.urlopen(req)
-# result = response.read()
-# obj = json.loads(result)
-# for language in obj['documents']:
-#     print(('Languages: ' + str(language['id']) + ': ' + ','.join([lang['name'] for lang in language['detectedLanguages']])))
 
-# Detect sentiment.
-# batch_sentiment_url = base_url + 'text/analytics/v2.0/sentiment'
-# req = urllib.request.Request(batch_sentiment_url, input_texts, headers)
-# response = urllib.request.urlopen(req)
-# result = response.read()
-# obj = json.loads(result)
-# for sentiment_analysis in obj['documents']:
-#     print(('Sentiment ' + str(sentiment_analysis['id']) + ' score: ' + str(sentiment_analysis['score'])))
+# place into a set
+print("Done")
