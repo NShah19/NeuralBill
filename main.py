@@ -28,17 +28,15 @@ consumer_secret = 'l2z6UimZ4I9p4l2OcEM4vfkfiDBlKIkwl1404SHGUJ6PhFCTb8'
 access_token = '848081359780302849-8UHyQfHoFhGMOVFIERZe07sEUORw3Vq'
 access_token_secret = '92I4B67TMptFwuraWJKaPKvs9t4EEHzQr53w2EhFohX8a'
 
+"""
+
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 
 api = tweepy.API(auth)
 #subDirFiles = ["01.csv", "02.csv", "03.csv", "04.csv", "05.csv", "06.csv", "07.csv", "08.csv", "09.csv", "10.csv",
  #               "11.csv", "12.csv", "13.csv", "14.csv", "15.csv", "16.csv", "17.csv", "18.csv", "19.csv", "20.csv"]
-<<<<<<< HEAD
 subDirFiles = ["06.csv"]
-=======
-subDirFiles = ["01.csv"]
->>>>>>> 4d3b7e10417deb729174807f3689f35f7c1b1bfe
 
 
 #comment out everything up to classifier training below and indent everyting
