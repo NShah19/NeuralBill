@@ -5,6 +5,7 @@ import re
 import tweepy
 import math
 import nltk
+import numpy as np
 
 consumer_key = '8n2xIVxdWhW661SSRkYMX5PWJ'
 consumer_secret = 'Av9WibDlGyR5yGPvxzX7voxcXs2McHkDCFvZcqjP6nYvsYDcEa'
@@ -15,7 +16,37 @@ auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 
 api = tweepy.API(auth)
+subDirFiles = ["01.csv", "02.csv", "03.csv", "04.csv", "05.csv", "06.csv", "07.csv", "08.csv", "09.csv", "10.csv",
+                "11.csv", "12.csv", "13.csv", "14.csv", "15.csv", "16.csv", "17.csv", "18.csv", "19.csv", "20.csv"]
 
+"""
+for "bills/" + filename in subDirFiles:
+    file = open(filename)
+    for line in file:
+        parsedCSV.append(line[0:-1])
+    billName = parsedCSV.pop(0)
+
+    introDateList = re.split("/", parsedCSV.pop(0))
+    INTRODUCTION_DATE = datetime(introDateList[2], introDateList[0], introDateList[1])
+
+    voteDateList = re.split("/", parsedCSV.pop(0))
+    if(voteDateList[0] is "NONE"):
+        VOTE_DATE = datetime.today()
+    else:
+        VOTE_DATE = datetime(voteDateList[2], voteDateList[0], voteDateList[1], 23, 59, 59)
+
+    listOfKW = list(parsedCSV)
+
+    if(INTRODUCTION_DATE < datetime(2017, 01, 03)):
+        HANDLE_CSV = "handles2014.csv"
+    else:
+        HANDLE_CSV = "handle2016.csv"
+    handleFile = open(HANDLE_CSV)
+    listOfHandles = []
+    for line in handleFile:
+        listOfHandles.append(line[0:len(line) - 1])
+#comment out everything up to classifier training below and indent everyting
+"""
 INTRODUCTION_DATE = datetime(2017, 1 , 1)
 VOTE_DATE = datetime(2017,4,2)
 HANDLE_CSV = "sampleHandles.csv"
@@ -101,7 +132,7 @@ for handle in listOfHandles:
     except tweepy.error.TweepError:
         pass
 
-    # Add weighted sentiment score for each stream to the list of tensor inputs        
+    # Add weighted sentiment score for each stream to the list of tensor inputs
     tensorInputs.append(weightedScore(sentiment_scores))
 
 print (tensorInputs)
