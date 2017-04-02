@@ -5,10 +5,9 @@ def parse_csv(data_file):
     # r = requests.get(data_file)
     # text = r.iter_lines(decode_unicode=True)
     data_list = []
-    with open(data_file, 'r', encoding="utf8") as csv_file:
-        
-        reader = csv.DictReader(csv_file)        
 
+    with open(data_file, 'r', encoding="utf8") as csv_file:
+        reader = csv.DictReader(csv_file)
         for row in reader:
             try:
                 if row['Sentiment'] == '0':
@@ -21,11 +20,12 @@ def parse_csv(data_file):
             except:
                 pass
 
-    print("Finished parsing csv")
-    print(len(data_list))
     return data_list
 
-training_tweets = parse_csv("TrainingDataset.csv")
-training_tweets = training_tweets[:100]
-
+def splitTrainingTweets(training_tweets):
+    split_tweets = []
+    for (words, sentiment) in training_tweets:
+        words_filtered = [x.lower() for x in words.split() if len(x) >= 3]
+        split_tweets.append((words_filtered, sentiment))
+    return split_tweets
 
