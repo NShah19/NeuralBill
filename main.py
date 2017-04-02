@@ -16,9 +16,9 @@ auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 
 api = tweepy.API(auth)
-subDirFiles = ["01.csv", "02.csv", "03.csv", "04.csv", "05.csv", "06.csv", "07.csv", "08.csv", "09.csv", "10.csv",
-                "11.csv", "12.csv", "13.csv", "14.csv", "15.csv", "16.csv", "17.csv", "18.csv", "19.csv", "20.csv"]
-
+#subDirFiles = ["01.csv", "02.csv", "03.csv", "04.csv", "05.csv", "06.csv", "07.csv", "08.csv", "09.csv", "10.csv",
+ #               "11.csv", "12.csv", "13.csv", "14.csv", "15.csv", "16.csv", "17.csv", "18.csv", "19.csv", "20.csv"]
+subDirFiles = ["01.csv"]
 
 
 #comment out everything up to classifier training below and indent everyting
@@ -31,8 +31,6 @@ f.close()
 
 tensorInputs2014 = []
 tensorInputs2016 = []
-
-tensorInputs = []
 
 class Tweet(object):
 
@@ -70,9 +68,12 @@ def weightedScore(sentiment_scores):
         power = maxDaysAway - numDaysAway
         numerator += (sentiment * math.pow(1.2, power))
         denominator += math.pow(1.2, power)
-    return numerator / denominator
+    if denominator > 0: 
+        return numerator / denominator 
+    return 0
 
 for filename in subDirFiles:
+    tensorInputs = []
     parsedCSV = []
     print("opening " + filename)
     file = open("bills/" + filename)
@@ -120,26 +121,39 @@ for filename in subDirFiles:
                     tweet_dates.append(tweet.created_at)
                     # keep track of what tweet we are on by id
                     last_tweet_id = tweet.id
-                    # perform sentiment analysis on the tweet
-                    score = analyze(tweet.text, classifier)
-                    sentiment_scores.append((score, tweet.created_at))
                 # set the next tweets to parse through by making the
                 user_tweets = api.user_timeline(screen_name=handle, max_id=last_tweet_id-1, count=200, include_rts=False, trim_user=True, exlude_replies=True)
             # create a Tweet object using the tweet contents and datetime object and append it to tweets
             print("reached this for loop")
             for i in range(0,len(tweet_contents)):
                 oldListOfTweets.append(Tweet(tweet_contents[i], tweet_dates[i]))
-            listOfTweets = list(filter(isRelevant, oldListOfTweets));
+            listOfTweets = list(filter(isRelevant, oldListOfTweets))
+            # perform sentiment analysis on each of the relevant tweets
+            for tweet in listOfTweets:
+                score = analyze(tweet.getText(), classifier)
+                sentiment_scores.append((score, tweet.getDate()))
+            tensorInputs.append(weightedScore(sentiment_scores))
             print("refined list of tweets for this handle")
             #sentiment analysis
 
 
         except tweepy.error.TweepError:
             print("EEEERRRROOOORRRRR")
+            tensorInputs.append(0)
             pass
 
+    if(int(filename[1:2]) <= 5):
+        expected = 1
+    else:
+        expected = 0
+
+    if(INTRODUCTION_DATE < datetime(2017, 1, 3)):
+        tensorInputs2014.append([tensorInputs, expected])
+    else:
+        tensorInputs2016.append([tensorInputs, expected])
+
     # Add weighted sentiment score for each stream to the list of tensor inputs
-    #tensorInputs.append(weightedScore(sentiment_scores))
+    
 #    getJSON from Twitter
 #    parse JSON into list of up to 3200 Tweet objects
 #    filter by keyword and date
