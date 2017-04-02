@@ -37,7 +37,7 @@ def get_key_phrases(url):
     # Detect key phrases.
     batch_keyphrase_url = base_url + 'text/analytics/v2.0/keyPhrases'
     keyword_dict = {}
-    for i in range(0, 95):
+    for i in range(0, min(23, len(input_texts))):
         print(i)
         req = urllib.request.Request(batch_keyphrase_url, input_texts[i].encode('utf-8'), headers)
         response = urllib.request.urlopen(req)
