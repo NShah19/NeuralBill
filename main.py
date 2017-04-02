@@ -1,6 +1,10 @@
 from datetime import datetime
+from trainingTweets import training_tweets
+from sentimentAnalyzer import get_classifier, analyze
 import re
 import tweepy
+import math
+import nltk
 
 consumer_key = '8n2xIVxdWhW661SSRkYMX5PWJ'
 consumer_secret = 'Av9WibDlGyR5yGPvxzX7voxcXs2McHkDCFvZcqjP6nYvsYDcEa'
@@ -12,8 +16,8 @@ auth.set_access_token(access_token, access_token_secret)
 
 api = tweepy.API(auth)
 
-INTRODUCTION_DATE = datetime(2000, 1 , 1)
-VOTE_DATE = datetime(2017,3,3)
+INTRODUCTION_DATE = datetime(2017, 1 , 1)
+VOTE_DATE = datetime(2017,4,2)
 HANDLE_CSV = "sampleHandles.csv"
 KW_CSV = "sampleKW.csv"
 handleFile = open(HANDLE_CSV)
@@ -24,6 +28,7 @@ kwFile = open(KW_CSV)
 listOfKW = []
 for line in kwFile:
     listOfKW.append(line[0:len(line) - 1].lower())
+classifer = get_classifier(training_tweets)
 tensorInputs = []
 
 class Tweet(object):
@@ -53,12 +58,22 @@ def isRelevant(tweet):
         return True
     return False
 
+def weightedScore(sentiment_scores):
+    score = 0;
+    for sentiment, date in sentiment_scores:
+        maxDaysAway = (VOTE_DATE - INTRODUCTION_DATE). days + 1
+        numDaysAway = (VOTE_DATE - date).days
+        value = math.expm1(3*(numDaysAway/maxDaysAway)) / math.expm1(3)
+        score += sentiment * (1 - value)
+    return score / len(sentiment_scores)
+
 
 for handle in listOfHandles:
     tweet_contents = []
     tweet_dates = []
     last_tweet_id = 0
     oldListOfTweets = []
+    sentiment_scores = []
     # Get all user tweets that arent rts or replies
     try:
         user_tweets = api.user_timeline(screen_name=handle, count=200, include_rts=False, trim_user=True, exlude_replies=True)
@@ -71,6 +86,9 @@ for handle in listOfHandles:
                 tweet_dates.append(tweet.created_at)
                 # keep track of what tweet we are on by id
                 last_tweet_id = tweet.id
+                # perform sentiment analysis on the tweet
+                score = analyze(tweet.text, classifer)
+                sentiment_scores.append((score, tweet.created_at))
             # set the next tweets to parse through by making the
             user_tweets = api.user_timeline(screen_name=handle, max_id=last_tweet_id-1, count=200, include_rts=False, trim_user=True, exlude_replies=True)
         # create a Tweet object using the tweet contents and datetime object and append it to tweets
@@ -82,6 +100,11 @@ for handle in listOfHandles:
 
     except tweepy.error.TweepError:
         pass
+
+    # Add weighted sentiment score for each stream to the list of tensor inputs        
+    tensorInputs.append(weightedScore(sentiment_scores))
+
+print (tensorInputs)
 
 
 #    getJSON from Twitter
