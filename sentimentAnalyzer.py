@@ -34,6 +34,7 @@ def get_classifier(tweets):
     processed_tweets = process(tweets)
     training_set = nltk.classify.apply_features(extract_features, processed_tweets)
     print("Done training set")
+    print(training_set)
     classifier = nltk.NaiveBayesClassifier.train(training_set)
     print("Done with classifier")
     return classifier

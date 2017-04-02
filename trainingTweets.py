@@ -24,5 +24,6 @@ def parse_csv(data_file):
     print("Finished parsing csv")
     return data_list
 
-training_tweets = parse_csv("TwitterSentiAnalysisDataset.csv")
-print("Test")
+training_tweets = parse_csv("TrainingDataset.csv")
+for i in range(0,50):
+    print(training_tweets[i])
