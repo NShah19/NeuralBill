@@ -6,7 +6,7 @@ import tweepy
 import math
 import nltk
 import numpy as np
-
+"""
 #Sachit's key:
 consumer_key = 'W6CRu6R9abFdp5KagUOUuSxTT'
 consumer_secret = 'bGVSXZEERi5VcfL6Polfx64ewJ2MB0VoFBXIVmsNiK861M7qLk'
@@ -19,7 +19,7 @@ consumer_key = 'IwxM09JjCfpxwg1uupphhaCmr'
 consumer_secret = 'l2z6UimZ4I9p4l2OcEM4vfkfiDBlKIkwl1404SHGUJ6PhFCTb8'
 access_token = '848081359780302849-8UHyQfHoFhGMOVFIERZe07sEUORw3Vq'
 access_token_secret = '92I4B67TMptFwuraWJKaPKvs9t4EEHzQr53w2EhFohX8a'
-"""
+
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 
@@ -112,7 +112,7 @@ for filename in subDirFiles:
         listOfHandles.append(line[0:len(line) - 2])
     counter = -1
     for handle in listOfHandles:
-        counter++
+        counter += 1
         tweet_contents = []
         tweet_dates = []
         last_tweet_id = 0
