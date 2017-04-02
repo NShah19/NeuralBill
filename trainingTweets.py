@@ -22,4 +22,9 @@ def parse_csv(data_file):
 
     return data_list
 
-training_tweets = parse_csv("TrainingDataset.csv")
+def splitTrainingTweets(training_tweets):
+    split_tweets = []
+    for (words, sentiment) in training_tweets:
+        words_filtered = [x.lower() for x in words.split() if len(x) >= 3]
+        split_tweets.append((words_filtered, sentiment))
+    return split_tweets
