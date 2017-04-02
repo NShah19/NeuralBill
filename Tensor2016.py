@@ -17,15 +17,23 @@ for i in range(5):
 def wrapper(arr):
 
     orderedArr = np.array(arr)
-    shuffledArr = np.array(arr)
-    np.random.shuffle(shuffledArr)
+    # shuffledArr = np.array(arr)
+    # np.random.shuffle(shuffledArr)
 
-    train_x = list(shuffledArr[:,0][:5])
-    train_y = list(shuffledArr[:,1][:5])
-    test_x = list(shuffledArr[:,0][5:8])
-    test_y = list(shuffledArr[:,1][5:8])
+    train_x = list(np.concatenate((orderedArr[:,0][:3], orderedArr[:,0][8:9])) ) #0-2 +, 8 -
+    train_y = list(np.concatenate((orderedArr[:,1][:3], orderedArr[:,1][8:9])) )
+    test_x = list(np.concatenate((orderedArr[:,0][4:5], orderedArr[:,0][9:])) ) #4 +, 9-
+    test_y = list(np.concatenate((orderedArr[:,1][4:5], orderedArr[:,1][9:])) )
     output_x = list(orderedArr[:,0][:])
     output_y = list(orderedArr[:,1][:])
+
+
+    # train_x = list(shuffledArr[:,0][:5])
+    # train_y = list(shuffledArr[:,1][:5])
+    # test_x = list(shuffledArr[:,0][5:8])
+    # test_y = list(shuffledArr[:,1][5:8])
+    # output_x = list(orderedArr[:,0][:])
+    # output_y = list(orderedArr[:,1][:])
 
     # hidden layers and their nodes
     n_nodes_hl1 = 5
@@ -75,7 +83,7 @@ def wrapper(arr):
         prediction = neural_network_model(x)
 
         # formula for cost (error)
-        cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_logits( logits= prediction, labels = y) )
+        cost = tf.reduce_mean( tf.nn.sigmoid_cross_entropy_with_logits( logits = prediction, labels = y) )
         # optimize for cost using GradientDescent
         optimizer = tf.train.GradientDescentOptimizer(1).minimize(cost)
 
@@ -119,4 +127,5 @@ def wrapper(arr):
                 print(tf.sigmoid(output[0]).eval())
 
     train_neural_network(x)
+
 wrapper(arr)
