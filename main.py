@@ -1,6 +1,7 @@
 from datetime import datetime
-from trainingTweets import training_tweets
-from sentimentAnalyzer import get_classifier, analyze
+from trainingTweets import parse_csv, splitTrainingTweets
+from analyzer import get_words_in_tweets, get_word_features, extract_features, analyze,get_classifier
+# from sentimentAnalyzer import get_classifier, analyze
 import re
 import tweepy
 import math
@@ -19,32 +20,8 @@ api = tweepy.API(auth)
 subDirFiles = ["01.csv", "02.csv", "03.csv", "04.csv", "05.csv", "06.csv", "07.csv", "08.csv", "09.csv", "10.csv",
                 "11.csv", "12.csv", "13.csv", "14.csv", "15.csv", "16.csv", "17.csv", "18.csv", "19.csv", "20.csv"]
 
-"""
-for "bills/" + filename in subDirFiles:
-    file = open(filename)
-    for line in file:
-        parsedCSV.append(line[0:-1])
-    billName = parsedCSV.pop(0)
 
-    introDateList = re.split("/", parsedCSV.pop(0))
-    INTRODUCTION_DATE = datetime(introDateList[2], introDateList[0], introDateList[1])
 
-    voteDateList = re.split("/", parsedCSV.pop(0))
-    if(voteDateList[0] is "NONE"):
-        VOTE_DATE = datetime.today()
-    else:
-        VOTE_DATE = datetime(voteDateList[2], voteDateList[0], voteDateList[1], 23, 59, 59)
-
-    listOfKW = list(parsedCSV)
-
-    if(INTRODUCTION_DATE < datetime(2017, 01, 03)):
-        HANDLE_CSV = "handles2014.csv"
-    else:
-        HANDLE_CSV = "handle2016.csv"
-    handleFile = open(HANDLE_CSV)
-    listOfHandles = []
-    for line in handleFile:
-        listOfHandles.append(line[0:len(line) - 1])
 #comment out everything up to classifier training below and indent everyting
 """
 INTRODUCTION_DATE = datetime(2017, 1 , 1)
@@ -59,8 +36,36 @@ kwFile = open(KW_CSV)
 listOfKW = []
 for line in kwFile:
     listOfKW.append(line[0:len(line) - 1].lower())
-classifer = get_classifier(training_tweets)
-tensorInputs = []
+
+# Get Training Tweets
+print("\033[1;33;40m Obtaining training data... \033[0m")
+training_tweets = parse_csv("TrainingDataset.csv")
+print("\033[1;32;40m Training data obtained! \033[0m")
+
+# Split the training tweets words
+print("\033[1;33;40m Splitting training tweets... \033[0m")
+training_tweets = splitTrainingTweets(training_tweets)
+print("\033[1;32;40m Training tweets have been split! \033[0m")
+
+# Get word features
+print("\033[1;33;40m Obtaining word features... \033[0m")
+word_features = get_word_features(get_words_in_tweets(training_tweets))
+print("\033[1;32;40m Word Features obtained! \033[0m")
+
+# Create the training set
+print("\033[1;33;40m Creating training set... \033[0m")
+training_set = nltk.classify.apply_features(extract_features, training_tweets, word_features)
+print("\033[1;32;40m Training set created! \033[0m")
+
+# Create classifier and train!
+print("\033[1;33;40m Creating classifier... \033[0m")
+classifier = get_classifier(training_set)
+print("\033[1;32;40m Classifier created! \033[0m")
+
+# classifier = get_classifier(training_tweets)
+"""
+tensorInputs2014 = []
+tensorInputs2016 = []
 
 class Tweet(object):
 
@@ -98,45 +103,73 @@ def weightedScore(sentiment_scores):
         score += sentiment * (1 - value)
     return score / len(sentiment_scores)
 
+for filename in subDirFiles:
+    parsedCSV = []
+    file = open("bills/" + filename)
+    for line in file:
+        parsedCSV.append(line[0:-1])
+    billName = parsedCSV.pop(0)
 
-for handle in listOfHandles:
-    tweet_contents = []
-    tweet_dates = []
-    last_tweet_id = 0
-    oldListOfTweets = []
-    sentiment_scores = []
-    # Get all user tweets that arent rts or replies
-    try:
-        user_tweets = api.user_timeline(screen_name=handle, count=200, include_rts=False, trim_user=True, exlude_replies=True)
-        # loop 3200 times
-        for i in range(0,15):
-            for tweet in user_tweets:
-                # append the content of the tweet to 'tweet_contents' variable
-                tweet_contents.append(tweet.text)
-                # append the date of the tweet to 'tweet_dates' varable
-                tweet_dates.append(tweet.created_at)
-                # keep track of what tweet we are on by id
-                last_tweet_id = tweet.id
-                # perform sentiment analysis on the tweet
-                score = analyze(tweet.text, classifer)
-                sentiment_scores.append((score, tweet.created_at))
-            # set the next tweets to parse through by making the
-            user_tweets = api.user_timeline(screen_name=handle, max_id=last_tweet_id-1, count=200, include_rts=False, trim_user=True, exlude_replies=True)
-        # create a Tweet object using the tweet contents and datetime object and append it to tweets
-        for i in range(0,len(tweet_contents)):
-            print(i)
-            oldListOfTweets.append(Tweet(tweet_contents[i], tweet_dates[i]))
-        listOfTweets = list(filter(isRelevant, oldListOfTweets));
-        #sentiment analysis
+    introDateList = re.split("/", parsedCSV.pop(0))
+    INTRODUCTION_DATE = datetime(int(introDateList[2]), int(introDateList[0]), int(introDateList[1]))
 
-    except tweepy.error.TweepError:
-        pass
+    voteDateList = re.split("/", parsedCSV.pop(0))
+    if(voteDateList[0] is "NONE"):
+        VOTE_DATE = datetime.today()
+    else:
+        VOTE_DATE = datetime(int(voteDateList[2]), int(voteDateList[0]), int(voteDateList[1]), 23, 59, 59)
+
+    listOfKW = list(parsedCSV)
+
+    if(INTRODUCTION_DATE < datetime(2017, 1, 3)):
+        print("opening 2014")
+        HANDLE_CSV = "handles2014.csv"
+    else:
+        print("opening 2016")
+        HANDLE_CSV = "handle2016.csv"
+    handleFile = open(HANDLE_CSV)
+    listOfHandles = []
+    for line in handleFile:
+        listOfHandles.append(line[0:len(line) - 1])
+
+    for handle in listOfHandles:
+        tweet_contents = []
+        tweet_dates = []
+        last_tweet_id = 0
+        oldListOfTweets = []
+        sentiment_scores = []
+        # Get all user tweets that arent rts or replies
+        try:
+            user_tweets = api.user_timeline(screen_name=handle, count=200, include_rts=False, trim_user=True, exlude_replies=True)
+            # loop 3200 times
+            for i in range(0,15):
+                for tweet in user_tweets:
+                    # append the content of the tweet to 'tweet_contents' variable
+                    tweet_contents.append(tweet.text)
+                    # append the date of the tweet to 'tweet_dates' varable
+                    tweet_dates.append(tweet.created_at)
+                    # keep track of what tweet we are on by id
+                    last_tweet_id = tweet.id
+                    # perform sentiment analysis on the tweet
+                    score = analyze(tweet.text, classifer)
+                    #sentiment_scores.append((score, tweet.created_at))
+                # set the next tweets to parse through by making the
+                user_tweets = api.user_timeline(screen_name=handle, max_id=last_tweet_id-1, count=200, include_rts=False, trim_user=True, exlude_replies=True)
+            # create a Tweet object using the tweet contents and datetime object and append it to tweets
+            for i in range(0,len(tweet_contents)):
+                oldListOfTweets.append(Tweet(tweet_contents[i], tweet_dates[i]))
+            listOfTweets = list(filter(isRelevant, oldListOfTweets));
+            print("refined list of tweets for this handle")
+            #sentiment analysis
+
+
+        except tweepy.error.TweepError:
+            pass
 
     # Add weighted sentiment score for each stream to the list of tensor inputs
-    tensorInputs.append(weightedScore(sentiment_scores))
+    #tensorInputs.append(weightedScore(sentiment_scores))
 
 print (tensorInputs)
-
 
 #    getJSON from Twitter
 #    parse JSON into list of up to 3200 Tweet objects
