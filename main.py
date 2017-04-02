@@ -1,6 +1,6 @@
 from datetime import datetime
 from trainingTweets import parse_csv, splitTrainingTweets
-from analyzer import get_words_in_tweets, get_word_features, extract_features, analyze,get_classifier
+from analyzer import get_words_in_tweets, get_word_features, analyze, set_training_set
 # from sentimentAnalyzer import get_classifier, analyze
 import re
 import tweepy
@@ -34,6 +34,7 @@ for line in kwFile:
 # Get Training Tweets
 print("\033[1;33;40m Obtaining training data... \033[0m")
 training_tweets = parse_csv("TrainingDataset.csv")
+training_tweets = training_tweets[:2000]
 print("\033[1;32;40m Training data obtained! \033[0m")
 
 # Split the training tweets words
@@ -48,12 +49,12 @@ print("\033[1;32;40m Word Features obtained! \033[0m")
 
 # Create the training set
 print("\033[1;33;40m Creating training set... \033[0m")
-training_set = nltk.classify.apply_features(extract_features, training_tweets, word_features)
+training_set = set_training_set(word_features, training_tweets)
 print("\033[1;32;40m Training set created! \033[0m")
 
 # Create classifier and train!
 print("\033[1;33;40m Creating classifier... \033[0m")
-classifier = get_classifier(training_set)
+classifier = nltk.NaiveBayesClassifier.train(training_set)
 print("\033[1;32;40m Classifier created! \033[0m")
 
 # classifier = get_classifier(training_tweets)

@@ -11,12 +11,17 @@ def get_word_features(wordlist):
 	word_features = wordlist.keys()
 	return word_features
 
-def extract_features(document, word_features):
-	document_words = set(document)
-	features = {}
-	for word in word_features:
-		features['contains(%s)' % word] = (word in document_words)
-	return features
+
+def set_training_set (word_features, training_tweets):
+
+	def extract_features(document):
+		document_words = set(document)
+		features = {}
+		for word in word_features:
+			features['contains(%s)' % word] = (word in document_words)
+		return features
+
+	return nltk.classify.apply_features(extract_features, training_tweets)
 
 def analyze (tweet, classifier):
 	if classifier.classify(extract_features(tweet.split())) == "positive":
