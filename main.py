@@ -6,7 +6,6 @@ import tweepy
 import math
 import nltk
 
-
 consumer_key = '8n2xIVxdWhW661SSRkYMX5PWJ'
 consumer_secret = 'Av9WibDlGyR5yGPvxzX7voxcXs2McHkDCFvZcqjP6nYvsYDcEa'
 
