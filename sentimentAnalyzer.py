@@ -7,7 +7,7 @@ def process(tweets):
     for (words, sentiment) in tweets:
         words_filtered = [x.lower() for x in words.split() if len(x) >= 3]
         processed_tweets.append((words_filtered, sentiment))
-    print("Test 2")
+    print("Processed Tweets")
     return processed_tweets
 
 def get_word_features(processed_tweets):
@@ -34,7 +34,6 @@ def get_classifier(tweets):
     processed_tweets = process(tweets)
     training_set = nltk.classify.apply_features(extract_features, processed_tweets)
     print("Done training set")
-    print(training_set)
     classifier = nltk.NaiveBayesClassifier.train(training_set)
     print("Done with classifier")
     return classifier
