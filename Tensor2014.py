@@ -75,7 +75,7 @@ def wrapper(arr):
         prediction = neural_network_model(x)
 
         # formula for cost (error)
-        cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_logits( logits = prediction, labels = y) )
+        cost = tf.reduce_mean( tf.nn.sigmoid_cross_entropy_with_logits( logits = prediction, labels = y) )
         # optimize for cost using GradientDescent
         optimizer = tf.train.GradientDescentOptimizer(1).minimize(cost)
 
