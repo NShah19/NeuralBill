@@ -26,7 +26,7 @@ auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth)
 #subDirFiles = ["01.csv", "02.csv", "03.csv", "04.csv", "05.csv", "06.csv", "07.csv", "08.csv", "09.csv", "10.csv",
  #               "11.csv", "12.csv", "13.csv", "14.csv", "15.csv", "16.csv", "17.csv", "18.csv", "19.csv", "20.csv"]
-subDirFiles = ["02.csv"]
+subDirFiles = ["01.csv"]
 
 
 #comment out everything up to classifier training below and indent everyting
@@ -110,8 +110,9 @@ for filename in subDirFiles:
     listOfHandles = []
     for line in handleFile:
         listOfHandles.append(line[0:len(line) - 2])
-
+    counter = -1
     for handle in listOfHandles:
+        counter++
         tweet_contents = []
         tweet_dates = []
         last_tweet_id = 0
