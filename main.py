@@ -112,7 +112,6 @@ for filename in subDirFiles:
         listOfHandles.append(line[0:len(line) - 2])
     counter = -1
     for handle in listOfHandles:
-        counter += 1
         tweet_contents = []
         tweet_dates = []
         last_tweet_id = 0
@@ -122,6 +121,7 @@ for filename in subDirFiles:
         try:
             user_tweets = api.user_timeline(screen_name=handle, count=200, include_rts=False, trim_user=True, exlude_replies=True)
             # loop 3200 times
+            counter += 1
             for i in range(0,15):
                 print(i)
                 for tweet in user_tweets:
