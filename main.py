@@ -7,10 +7,10 @@ import math
 import nltk
 import numpy as np
 
-consumer_key = 'IwxM09JjCfpxwg1uupphhaCmr'
-consumer_secret = 'l2z6UimZ4I9p4l2OcEM4vfkfiDBlKIkwl1404SHGUJ6PhFCTb8'
-access_token = '848081359780302849-8UHyQfHoFhGMOVFIERZe07sEUORw3Vq'
-access_token_secret = '92I4B67TMptFwuraWJKaPKvs9t4EEHzQr53w2EhFohX8a'
+consumer_key = 'W6CRu6R9abFdp5KagUOUuSxTT'
+consumer_secret = 'bGVSXZEERi5VcfL6Polfx64ewJ2MB0VoFBXIVmsNiK861M7qLk'
+access_token = '1615305834-XwgnwCCpMTd71wDOaH4PTf3jFY8V52s4IL0xeS1'
+access_token_secret = 'o57Q51x743ht0W7pjeH1VK0mBP6NvnrAxXsyEYyYUCBEu'
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
@@ -114,6 +114,7 @@ for filename in subDirFiles:
             user_tweets = api.user_timeline(screen_name=handle, count=200, include_rts=False, trim_user=True, exlude_replies=True)
             # loop 3200 times
             for i in range(0,15):
+                print(i)
                 for tweet in user_tweets:
                     # append the content of the tweet to 'tweet_contents' variable
                     tweet_contents.append(tweet.text)
@@ -135,7 +136,6 @@ for filename in subDirFiles:
             tensorInputs.append(weightedScore(sentiment_scores))
             print("refined list of tweets for this handle")
             #sentiment analysis
-
 
         except tweepy.error.TweepError:
             print("EEEERRRROOOORRRRR")
