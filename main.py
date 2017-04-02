@@ -60,13 +60,15 @@ def isRelevant(tweet):
     return False
 
 def weightedScore(sentiment_scores):
-    score = 0;
+    numerator = 0
+    denominator = 0
     for sentiment, date in sentiment_scores:
-        maxDaysAway = (VOTE_DATE - INTRODUCTION_DATE). days + 1
+        maxDaysAway = (VOTE_DATE - INTRODUCTION_DATE).days + 1
         numDaysAway = (VOTE_DATE - date).days
-        value = math.expm1(3*(numDaysAway/maxDaysAway)) / math.expm1(3)
-        score += sentiment * (1 - value)
-    return score / len(sentiment_scores)
+        power = maxDaysAway - numDaysAway
+        numerator += (sentiment * math.pow(1.2, power))
+        denominator += math.pow(1.2, power)
+    return numerator / denominator
 
 
 for handle in listOfHandles:
@@ -81,7 +83,7 @@ for handle in listOfHandles:
         # loop 3200 times
         for i in range(0,15):
             for tweet in user_tweets:
-                # append the content of the tweet to 'tweet_contents' variable
+                # append the cnotent of the tweet to 'tweet_contents' variable
                 tweet_contents.append(tweet.text)
                 # append the date of the tweet to 'tweet_dates' varable
                 tweet_dates.append(tweet.created_at)
