@@ -7,18 +7,26 @@ import math
 import nltk
 import numpy as np
 
+#Sachit's key:
 consumer_key = 'W6CRu6R9abFdp5KagUOUuSxTT'
 consumer_secret = 'bGVSXZEERi5VcfL6Polfx64ewJ2MB0VoFBXIVmsNiK861M7qLk'
 access_token = '1615305834-XwgnwCCpMTd71wDOaH4PTf3jFY8V52s4IL0xeS1'
 access_token_secret = 'o57Q51x743ht0W7pjeH1VK0mBP6NvnrAxXsyEYyYUCBEu'
+"""
 
+#Nilay's Keys:
+consumer_key = 'IwxM09JjCfpxwg1uupphhaCmr'
+consumer_secret = 'l2z6UimZ4I9p4l2OcEM4vfkfiDBlKIkwl1404SHGUJ6PhFCTb8'
+access_token = '848081359780302849-8UHyQfHoFhGMOVFIERZe07sEUORw3Vq'
+access_token_secret = '92I4B67TMptFwuraWJKaPKvs9t4EEHzQr53w2EhFohX8a'
+"""
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 
 api = tweepy.API(auth)
 #subDirFiles = ["01.csv", "02.csv", "03.csv", "04.csv", "05.csv", "06.csv", "07.csv", "08.csv", "09.csv", "10.csv",
  #               "11.csv", "12.csv", "13.csv", "14.csv", "15.csv", "16.csv", "17.csv", "18.csv", "19.csv", "20.csv"]
-subDirFiles = ["01.csv"]
+subDirFiles = ["02.csv"]
 
 
 #comment out everything up to classifier training below and indent everyting
@@ -60,16 +68,16 @@ def isRelevant(tweet):
     return False
 
 def weightedScore(sentiment_scores):
-    numerator = 0
-    denominator = 0
+    numerator = 0.0
+    denominator = 0.0
     for sentiment, date in sentiment_scores:
         maxDaysAway = (VOTE_DATE - INTRODUCTION_DATE).days + 1
         numDaysAway = (VOTE_DATE - date).days
         power = maxDaysAway - numDaysAway
         numerator += (sentiment * math.pow(1.2, power))
         denominator += math.pow(1.2, power)
-    if denominator > 0: 
-        return numerator / denominator 
+    if denominator > 0:
+        return numerator / denominator
     return 0
 
 for filename in subDirFiles:
@@ -153,7 +161,7 @@ for filename in subDirFiles:
         tensorInputs2016.append([tensorInputs, expected])
 
     # Add weighted sentiment score for each stream to the list of tensor inputs
-    
+
 #    getJSON from Twitter
 #    parse JSON into list of up to 3200 Tweet objects
 #    filter by keyword and date
