@@ -24,18 +24,6 @@ subDirFiles = ["01.csv", "02.csv", "03.csv", "04.csv", "05.csv", "06.csv", "07.c
 
 #comment out everything up to classifier training below and indent everyting
 """
-INTRODUCTION_DATE = datetime(2017, 1 , 1)
-VOTE_DATE = datetime(2017,4,2)
-HANDLE_CSV = "sampleHandles.csv"
-KW_CSV = "sampleKW.csv"
-handleFile = open(HANDLE_CSV)
-listOfHandles = []
-for line in handleFile:
-    listOfHandles.append(line[0:len(line) - 1])
-kwFile = open(KW_CSV)
-listOfKW = []
-for line in kwFile:
-    listOfKW.append(line[0:len(line) - 1].lower())
 
 # Get Training Tweets
 print("\033[1;33;40m Obtaining training data... \033[0m")
@@ -66,6 +54,8 @@ print("\033[1;32;40m Classifier created! \033[0m")
 """
 tensorInputs2014 = []
 tensorInputs2016 = []
+
+tensorInputs = []
 
 class Tweet(object):
 
@@ -105,6 +95,7 @@ def weightedScore(sentiment_scores):
 
 for filename in subDirFiles:
     parsedCSV = []
+    print("opening " + filename)
     file = open("bills/" + filename)
     for line in file:
         parsedCSV.append(line[0:-1])
@@ -114,7 +105,7 @@ for filename in subDirFiles:
     INTRODUCTION_DATE = datetime(int(introDateList[2]), int(introDateList[0]), int(introDateList[1]))
 
     voteDateList = re.split("/", parsedCSV.pop(0))
-    if(voteDateList[0] is "NONE"):
+    if(voteDateList[0] == 'NONE'):
         VOTE_DATE = datetime.today()
     else:
         VOTE_DATE = datetime(int(voteDateList[2]), int(voteDateList[0]), int(voteDateList[1]), 23, 59, 59)
@@ -126,7 +117,7 @@ for filename in subDirFiles:
         HANDLE_CSV = "handles2014.csv"
     else:
         print("opening 2016")
-        HANDLE_CSV = "handle2016.csv"
+        HANDLE_CSV = "handles2016.csv"
     handleFile = open(HANDLE_CSV)
     listOfHandles = []
     for line in handleFile:
@@ -151,11 +142,12 @@ for filename in subDirFiles:
                     # keep track of what tweet we are on by id
                     last_tweet_id = tweet.id
                     # perform sentiment analysis on the tweet
-                    score = analyze(tweet.text, classifer)
+                    #score = analyze(tweet.text, classifer)
                     #sentiment_scores.append((score, tweet.created_at))
                 # set the next tweets to parse through by making the
                 user_tweets = api.user_timeline(screen_name=handle, max_id=last_tweet_id-1, count=200, include_rts=False, trim_user=True, exlude_replies=True)
             # create a Tweet object using the tweet contents and datetime object and append it to tweets
+            print("reached this for loop")
             for i in range(0,len(tweet_contents)):
                 oldListOfTweets.append(Tweet(tweet_contents[i], tweet_dates[i]))
             listOfTweets = list(filter(isRelevant, oldListOfTweets));
@@ -164,13 +156,21 @@ for filename in subDirFiles:
 
 
         except tweepy.error.TweepError:
+            print("EEEERRRROOOORRRRR")
             pass
 
     # Add weighted sentiment score for each stream to the list of tensor inputs
     #tensorInputs.append(weightedScore(sentiment_scores))
-
-print (tensorInputs)
-
+"""    numerator = 0
+    denominator = 0
+    for sentiment, date in sentiment_scores:
+        maxDaysAway = (VOTE_DATE - INTRODUCTION_DATE).days + 1
+        numDaysAway = (VOTE_DATE - date).days
+        power = maxDaysAway - numDaysAway
+        numerator += (sentiment * math.pow(1.2, power))
+        denominator += math.pow(1.2, power)
+    return numerator / denominator
+"""
 #    getJSON from Twitter
 #    parse JSON into list of up to 3200 Tweet objects
 #    filter by keyword and date

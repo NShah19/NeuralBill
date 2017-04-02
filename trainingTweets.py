@@ -28,3 +28,4 @@ def splitTrainingTweets(training_tweets):
         words_filtered = [x.lower() for x in words.split() if len(x) >= 3]
         split_tweets.append((words_filtered, sentiment))
     return split_tweets
+
