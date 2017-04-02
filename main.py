@@ -1,15 +1,13 @@
 from datetime import datetime
-from trainingTweets import parse_csv, splitTrainingTweets
-from analyzer import get_words_in_tweets, get_word_features, analyze, set_training_set
-# from sentimentAnalyzer import get_classifier, analyze
+import pickle
 import re
 import tweepy
 import math
 import nltk
 import numpy as np
 
-consumer_key = '8n2xIVxdWhW661SSRkYMX5PWJ'
-consumer_secret = 'Av9WibDlGyR5yGPvxzX7voxcXs2McHkDCFvZcqjP6nYvsYDcEa'
+consumer_key = 'IwxM09JjCfpxwg1uupphhaCmr'
+consumer_secret = 'l2z6UimZ4I9p4l2OcEM4vfkfiDBlKIkwl1404SHGUJ6PhFCTb8'
 access_token = '848081359780302849-8UHyQfHoFhGMOVFIERZe07sEUORw3Vq'
 access_token_secret = '92I4B67TMptFwuraWJKaPKvs9t4EEHzQr53w2EhFohX8a'
 
@@ -24,31 +22,9 @@ subDirFiles = ["01.csv", "02.csv", "03.csv", "04.csv", "05.csv", "06.csv", "07.c
 
 #comment out everything up to classifier training below and indent everyting
 
-# Get Training Tweets
-print("\033[1;33;40m Obtaining training data... \033[0m")
-training_tweets = parse_csv("TrainingDataset.csv")
-training_tweets = training_tweets[:2000]
-print("\033[1;32;40m Training data obtained! \033[0m")
-
-# Split the training tweets words
-print("\033[1;33;40m Splitting training tweets... \033[0m")
-training_tweets = splitTrainingTweets(training_tweets)
-print("\033[1;32;40m Training tweets have been split! \033[0m")
-
-# Get word features
-print("\033[1;33;40m Obtaining word features... \033[0m")
-word_features = get_word_features(get_words_in_tweets(training_tweets))
-print("\033[1;32;40m Word Features obtained! \033[0m")
-
-# Create the training set
-print("\033[1;33;40m Creating training set... \033[0m")
-training_set = set_training_set(word_features, training_tweets)
-print("\033[1;32;40m Training set created! \033[0m")
-
-# Create classifier and train!
-print("\033[1;33;40m Creating classifier... \033[0m")
-classifier = nltk.NaiveBayesClassifier.train(training_set)
-print("\033[1;32;40m Classifier created! \033[0m")
+f = open('my_classifier.pickle', 'rb')
+classifier = pickle.load(f)
+f.close()
 
 # classifier = get_classifier(training_tweets)
 
@@ -142,8 +118,8 @@ for filename in subDirFiles:
                     # keep track of what tweet we are on by id
                     last_tweet_id = tweet.id
                     # perform sentiment analysis on the tweet
-                    #score = analyze(tweet.text, classifer)
-                    #sentiment_scores.append((score, tweet.created_at))
+                    score = analyze(tweet.text, classifer)
+                    sentiment_scores.append((score, tweet.created_at))
                 # set the next tweets to parse through by making the
                 user_tweets = api.user_timeline(screen_name=handle, max_id=last_tweet_id-1, count=200, include_rts=False, trim_user=True, exlude_replies=True)
             # create a Tweet object using the tweet contents and datetime object and append it to tweets
