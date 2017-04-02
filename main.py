@@ -7,12 +7,19 @@ import math
 import nltk
 import numpy as np
 
+#My keys
+consumer_key = 'wZD8yz1kZgsQgzsK3bNgQP2q2'
+consumer_secret = 'wq0ZFMkLCei5TB2ymNoOPB6LI0188aA01Wsfs5pkQUyWA9JRr6'
+access_token = '848539172298080256-AM3ev705NigIUISQLXfn4moToFQPks1'
+access_token_secret = 'WiU6dcqVMs5q0g35phNrhEetKIkLhbGcXHb1XoorKLUvf'
+
+"""
 #Sachit's key:
 consumer_key = 'W6CRu6R9abFdp5KagUOUuSxTT'
 consumer_secret = 'bGVSXZEERi5VcfL6Polfx64ewJ2MB0VoFBXIVmsNiK861M7qLk'
 access_token = '1615305834-XwgnwCCpMTd71wDOaH4PTf3jFY8V52s4IL0xeS1'
 access_token_secret = 'o57Q51x743ht0W7pjeH1VK0mBP6NvnrAxXsyEYyYUCBEu'
-"""
+
 
 #Nilay's Keys:
 consumer_key = 'IwxM09JjCfpxwg1uupphhaCmr'
@@ -26,7 +33,7 @@ auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth)
 #subDirFiles = ["01.csv", "02.csv", "03.csv", "04.csv", "05.csv", "06.csv", "07.csv", "08.csv", "09.csv", "10.csv",
  #               "11.csv", "12.csv", "13.csv", "14.csv", "15.csv", "16.csv", "17.csv", "18.csv", "19.csv", "20.csv"]
-subDirFiles = ["02.csv"]
+subDirFiles = ["06.csv"]
 
 
 #comment out everything up to classifier training below and indent everyting
