@@ -24,4 +24,5 @@ def analyze (tweet, classifier):
 	return -1
 
 def get_classifier (training_set):
-
+	classifier = nltk.NaiveBayesClassifier.train(training_set)
+	return classifier

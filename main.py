@@ -1,6 +1,6 @@
 from datetime import datetime
 from trainingTweets import parse_csv, splitTrainingTweets
-from analyzer import get_words_in_tweets, get_word_features, extract_features, analyze
+from analyzer import get_words_in_tweets, get_word_features, extract_features, analyze,get_classifier
 # from sentimentAnalyzer import get_classifier, analyze
 import re
 import tweepy
@@ -53,7 +53,7 @@ print("\033[1;32;40m Training set created! \033[0m")
 
 # Create classifier and train!
 print("\033[1;33;40m Creating classifier... \033[0m")
-classifier = nltk.NaiveBayesClassifier.train(training_set)
+classifier = get_classifier(training_set)
 print("\033[1;32;40m Classifier created! \033[0m")
 
 # classifier = get_classifier(training_tweets)
