@@ -4,7 +4,6 @@ import tweepy
 
 consumer_key = '8n2xIVxdWhW661SSRkYMX5PWJ'
 consumer_secret = 'Av9WibDlGyR5yGPvxzX7voxcXs2McHkDCFvZcqjP6nYvsYDcEa'
-
 access_token = '848081359780302849-8UHyQfHoFhGMOVFIERZe07sEUORw3Vq'
 access_token_secret = '92I4B67TMptFwuraWJKaPKvs9t4EEHzQr53w2EhFohX8a'
 
